@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-fg: var(--fg);
+  --color-surface: var(--bg);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--fg) 26%, transparent);
+}
+
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131313;
+    --fg: #ffffff;
+  }
+}
+
+body {
+  margin: 0;
+}

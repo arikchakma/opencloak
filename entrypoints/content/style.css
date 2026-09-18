@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* `inline` matters: the card lives in a shadow root, where the `:root` rule a
+   plain @theme emits would never match. */
+@theme inline {
+  --color-fg: var(--oc-fg);
+  --color-surface: var(--oc-bg);
+  --radius-host: var(--oc-radius);
+  --radius-host-inner: calc(var(--oc-radius) * 0.55);
+  --shadow-focus: var(--oc-focus);
+  --text-kind: 0.5625rem;
+  --shadow-card: 0 1px 1px rgb(0 0 0 / 5%), 0 26px 50px -20px rgb(0 0 0 / 55%);
+  --shadow-pill: 0 12px 30px -14px rgb(0 0 0 / 50%);
+}
+
+:host {
+  all: initial;
+}
+
+/* Fallbacks only. The host page's own values are sampled in at open time. */
+.oc-root {
+  --oc-bg: #fff;
+  --oc-fg: #000;
+  --oc-radius: 16px;
+  --oc-focus: 0 0 0 3px color-mix(in srgb, var(--oc-fg) 26%, transparent);
+
+  -webkit-font-smoothing: antialiased;
+}
+
+:host :is(button, input, a, [tabindex="0"]):focus-visible {
+  outline: none;
+  box-shadow: var(--oc-focus);
+}
+
+@keyframes oc-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.995); }
+}
+
+.oc-in {
+  animation: oc-in 140ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oc-in { animation: none; }
+}

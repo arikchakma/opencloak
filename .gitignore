@@ -1,0 +1,7 @@
+node_modules
+.wxt
+.output
+stats.html
+public/model.json
+public/model.bin
+.DS_Store
