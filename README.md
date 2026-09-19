@@ -14,23 +14,27 @@ marks each restored value with the fake that the model received.
 
 ## Why OpenCloak
 
-Detection and replacement both happen in the page. There is no server and no account. No
-network call carries your prompt anywhere but where you meant to send it.
+Everything happens in the page. There is no server and no account.
 
-- [`gpu-pii`](https://www.npmjs.com/package/gpu-pii) runs on WebGPU inside the content
-  script. It finds names, addresses, emails, phone numbers, dates of birth, SSNs, card
-  numbers and IP addresses on your own device.
-- ChatGPT sends the characters you type to its server before you press send. A guard in
-  the page's own world answers that request locally, so the card is not the only thing
-  between you and a leak.
-- The card shows the prompt as it would really be sent, then waits for you. If you turn
-  Review off, OpenCloak cloaks the prompt and sends it without asking.
-- A value keeps the same fake every time. A prompt about "Peter" stays coherent when the
-  model answers about "Ralph". Only details you have not ruled on before interrupt you.
-- OpenCloak puts your real values back into the page as the reply renders. Hover a
-  restored value to see what the model received.
-- The card samples the surface color and corner radius of the host page. It looks native
-  on all six sites, and it needs no palette for each one.
+- The model runs on your GPU inside the page. Your prompt never leaves the device to be
+  read.
+- ChatGPT sends the characters you type before you press send. A guard answers that
+  request locally.
+- The card shows the prompt as it will really be sent. Nothing goes out until you agree.
+- A value always gets the same fake, so the conversation still makes sense.
+- Each restored value shows the fake the model received when you hover it.
+
+## Installation
+
+- Download the latest `opencloak-<version>-chrome.zip` from
+  [releases](https://github.com/arikchakma/opencloak/releases)
+- Unzip it, since Chrome cannot load a zip directly
+- Open `chrome://extensions` and turn on **Developer mode**
+- Choose **Load unpacked** and pick the unzipped folder
+- Pin OpenCloak to the toolbar, so the icon opens the side panel
+
+Detection needs WebGPU, which Chrome has had since version 113. If the card never appears,
+open `chrome://gpu` and look for `WebGPU: Hardware accelerated`.
 
 ## Development
 
@@ -42,9 +46,9 @@ pnpm compile
 pnpm build
 ```
 
-`pnpm install` also copies the model files into `public/`. To load a build by hand, run
-`pnpm build`. Then open Extensions in Chrome, turn on Developer mode, and choose **Load
-unpacked** on `.output/chrome-mv3`.
+`pnpm install` also copies the model files into `public/`. `pnpm dev` launches Chrome with
+the extension loaded and reloads it as you edit. `pnpm build` writes an unpacked build to
+`.output/chrome-mv3`, which you can load the same way as a release.
 
 ## Known edges
 
