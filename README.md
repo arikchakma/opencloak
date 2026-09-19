@@ -60,8 +60,8 @@ the extension loaded and reloads it as you edit. `pnpm build` writes an unpacked
   than let the real text through.
 - OpenCloak swaps a fake back wherever it appears in a reply. A fake that happens to be a
   common word can be restored somewhere you did not mean it to be.
-- Restoring real values in a streaming reply works on whole text nodes. A fake split
-  across two streamed chunks is missed until that node settles.
+- Restoring real values in a streaming reply joins neighbouring text nodes, so a fake
+  split across chunks is still caught. One split across two elements is not.
 - A switch in the side panel takes effect on the next page load.
 
 ## Acknowledgements

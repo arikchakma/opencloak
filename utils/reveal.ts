@@ -87,34 +87,48 @@ export function reveal(root: HTMLElement) {
   );
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const hits: Text[] = [];
+  const runs: Text[][] = [];
 
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-    const text = node.nodeValue ?? "";
-    pattern.lastIndex = 0;
-    if (!pattern.test(text)) continue;
-
     const parent = node.parentElement;
     if (!parent || OFF_LIMITS.has(parent.tagName)) continue;
     if (parent.closest(`[contenteditable="true"], textarea, [${MARK}]`)) continue;
-    hits.push(node as Text);
+
+    const run = runs.at(-1);
+    const previous = run?.at(-1);
+    let sibling = previous?.nextSibling;
+    // Streaming markers separate text fragments without creating a word boundary.
+    while (sibling && sibling.nodeType !== Node.TEXT_NODE && sibling.nodeType !== Node.ELEMENT_NODE) {
+      sibling = sibling.nextSibling;
+    }
+    if (previous?.parentElement === parent && sibling === node) run!.push(node as Text);
+    else runs.push([node as Text]);
   }
 
-  for (const node of hits) {
-    const text = node.nodeValue ?? "";
-    const parts = document.createDocumentFragment();
-    let cursor = 0;
-
-    pattern.lastIndex = 0;
-    for (let hit = pattern.exec(text); hit; hit = pattern.exec(text)) {
+  for (const run of runs) {
+    let offset = 0;
+    const fragments = run.map((node) => {
+      const start = offset;
+      offset += node.length;
+      return { node, start, end: offset };
+    });
+    const text = run.map((node) => node.data).join("");
+    // Work backwards so earlier match offsets remain valid after each edit.
+    for (const hit of [...text.matchAll(pattern)].reverse()) {
       const real = restore.get(hit[0]);
       if (!real) continue;
-      if (hit.index > cursor) parts.append(text.slice(cursor, hit.index));
-      parts.append(mark(real, hit[0]));
-      cursor = hit.index + hit[0].length;
+      const start = hit.index;
+      const end = start + hit[0].length;
+      const covered = fragments.filter((part) => part.start < end && part.end > start);
+      const first = covered[0];
+      if (!first) continue;
+      for (const part of covered) {
+        const from = Math.max(start, part.start) - part.start;
+        const to = Math.min(end, part.end) - part.start;
+        part.node.deleteData(from, to - from);
+      }
+      const tail = first.node.splitText(start - first.start);
+      tail.parentNode?.insertBefore(mark(real, hit[0]), tail);
     }
-
-    if (cursor < text.length) parts.append(text.slice(cursor));
-    node.parentNode?.replaceChild(parts, node);
   }
 }
