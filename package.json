@@ -11,7 +11,7 @@
     "release": "bumpp",
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare && cp node_modules/gpu-pii/public/model.json node_modules/gpu-pii/public/model.bin public/",
+    "postinstall": "cp node_modules/gpu-pii/public/model.json node_modules/gpu-pii/public/model.bin public/ && wxt prepare",
     "check": "node --disable-warning=ExperimentalWarning utils/cloak.check.ts"
   },
   "dependencies": {
