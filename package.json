@@ -1,6 +1,6 @@
 {
   "name": "opencloak",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "license": "MIT",
   "packageManager": "pnpm@11.13.1",
